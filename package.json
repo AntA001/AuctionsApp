@@ -1,0 +1,18 @@
+{
+  "name": "auction-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:hubfinance/auction-app.git",
+  "author": "<9036229+Jaffeur@users.noreply.github.com>",
+  "license": "MIT",
+  "private": null,
+  "devDependencies": {
+    "@types/uuid": "^9.0.4",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "^5.8.4",
+    "@mikro-orm/postgresql": "^5.8.4",
+    "uuid": "^9.0.1"
+  }
+}
