@@ -19,7 +19,7 @@ export type AuctionCsv = {
 export type BidCsv = {
   user_id: string;
   auction_id: string;
-  created_at: string;
+  created_at: number;
   price: number;
   is_maximum: string;
 };
