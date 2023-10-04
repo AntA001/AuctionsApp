@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/core";
-import { UserCsv } from "../types";
+import { AuctionCsv, UserCsv } from "../types";
 
 const fs = require("fs");
 const csv = require("csv-parser");
@@ -7,7 +7,7 @@ const csv = require("csv-parser");
 export abstract class BaseSeeder {
   protected execute(entityManager: EntityManager) {}
 
-  readCsv<T extends UserCsv>(): Promise<T[]> {
+  readCsv<T extends UserCsv | AuctionCsv>(): Promise<T[]> {
     return new Promise((resolve) => {
       const rows = [] as T[];
 

@@ -2,7 +2,7 @@ import { MikroORM } from "@mikro-orm/postgresql";
 import "dotenv/config";
 
 import mikroOrmConfig from "../database/mikro-orm.config";
-import { UserSeeder } from "./seeder";
+import { AuctionSeeder, UserSeeder } from "./seeder";
 
 (async () => {
   try {
@@ -10,12 +10,17 @@ import { UserSeeder } from "./seeder";
 
     const entityToSeed = process.argv[2];
 
+    let seeder = new UserSeeder();
+
     switch (entityToSeed) {
+      case "auction":
+        seeder = new AuctionSeeder();
+        break;
       default:
-        const seeder = new UserSeeder();
-        await seeder.execute(orm.em);
         break;
     }
+
+    await seeder.execute(orm.em);
 
     console.log(`successfully seeded ${entityToSeed}`);
     process.exit(0);
