@@ -21,4 +21,5 @@ export default {
         transactional: true,
         disableForeignKeys: true,
     },
+    allowGlobalContext: true,
   } as Options;
