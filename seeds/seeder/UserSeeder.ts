@@ -1,38 +1,31 @@
 import { EntityManager } from "@mikro-orm/core";
-import { ISeeder } from "./ISeeder";
+
 import { UserCsv } from "../types";
 import { User } from "../../database/entities";
+import { BaseSeeder } from "./BaseSeeder";
 
-const fs = require("fs");
-const csv = require("csv-parser");
+export class UserSeeder extends BaseSeeder {
+  async execute(entityManager: EntityManager): Promise<void> {
+    const usersCsv = await this.readCsv<UserCsv>();
 
-export class UserSeeder implements ISeeder {
-  execute(entityManager: EntityManager) {
-    const usersCsv = [] as UserCsv[];
+    const users = await Promise.all(
+      usersCsv.map(async ({ id, name }) => {
+        const existingUser = await entityManager.findOne(User, { id });
 
-    fs.createReadStream(process.argv[3])
-      .pipe(csv())
-      .on("data", (data: UserCsv) => usersCsv.push(data))
-      .on("end", async () => {
-        const users = await Promise.all(
-          usersCsv.map(async ({ id, name }) => {
-            const existingUser = await entityManager.findOne(User, { id });
+        if (existingUser) {
+          existingUser.name = name;
 
-            if (existingUser) {
-              existingUser.name = name;
+          return existingUser;
+        }
 
-              return existingUser;
-            }
+        const newUser = new User({
+          id,
+          name,
+        });
+        return newUser;
+      })
+    );
 
-            const newUser = new User({
-              id,
-              name,
-            });
-            return newUser;
-          })
-        );
-
-        await entityManager.persistAndFlush(users);
-      });
+    await entityManager.persistAndFlush(users);
   }
 }

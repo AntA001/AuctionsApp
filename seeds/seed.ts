@@ -12,7 +12,8 @@ import { UserSeeder } from "./seeder";
 
     switch (entityToSeed) {
       default:
-        new UserSeeder().execute(orm.em);
+        const seeder = new UserSeeder();
+        await seeder.execute(orm.em);
         break;
     }
 
