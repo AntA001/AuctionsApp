@@ -29,7 +29,7 @@ export class Auction extends BaseEntity {
     @Property({ columnType: 'varchar(225)' })
     title: string;
 
-    @Property({ columnType: 'varchar(225)' })
+    @Property({ columnType: 'text' })
     description: string;
 
     @Enum({ items: () => ItemCategory })
