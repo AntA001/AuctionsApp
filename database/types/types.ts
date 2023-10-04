@@ -1,4 +1,4 @@
-import { BaseEntity } from "../BaseEntity";
+import { BaseEntity } from "../entities/BaseEntity";
 
 
 export type UUID = string;

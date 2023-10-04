@@ -1,42 +1,43 @@
-import { ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { EntityInitData } from "./types/types";
-import { UserEntity } from "./User";
-import { AuctionEntity } from "./Auction";
+import { EntityInitData } from "../types/types";
+import { User } from "./User";
+import { Auction } from "./Auction";
 
-
-export class BidEntity extends BaseEntity {
-    constructor(init: EntityInitData<BidEntity, 'bidder' | 'auction' | 'price' | 'maxPrice'>) {
+@Entity()
+export class Bid extends BaseEntity {
+    constructor(init: EntityInitData<Bid, 'bidder' | 'auction' | 'price' | 'isMaximum'>) {
         super(init);
         this.bidder= init.bidder;
         this.auction= init.auction;
         this.price= init.price;
-        this.maxPrice= init.maxPrice;
+        this.isMaximum= init.isMaximum;
     }
 
     @ManyToOne({
-        entity: () => UserEntity,
+        entity: () => User,
         name: 'bidder_id',
         cascade: [],
         onDelete: 'cascade',
         onUpdateIntegrity: 'cascade',
         columnType: 'uuid',
     })
-    bidder: UserEntity;
+    bidder: User;
 
     @ManyToOne({
-        entity: () => AuctionEntity,
+        entity: () => Auction,
         name: 'auction_id',
         cascade: [],
         onDelete: 'cascade',
         onUpdateIntegrity: 'cascade',
         columnType: 'uuid',
     })
-    auction: AuctionEntity;
+    auction: Auction;
 
     @Property({ columnType: 'integer' })
     price: number;
 
-    @Property({ columnType: 'integer' })
-    maxPrice: number;
+    @Property({ columnType: 'boolean', default: false })
+    isMaximum: boolean;
+    
 }

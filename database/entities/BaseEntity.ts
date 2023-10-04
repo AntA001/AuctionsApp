@@ -1,7 +1,7 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { v4 } from "uuid";
-import { UUID } from "./types/types";
-import { hasOwn } from "./types/helper";
+import { UUID } from "../types/types";
+import { hasOwn } from "../types/helper";
 
 @Entity({ abstract: true })
 export abstract class BaseEntity {
