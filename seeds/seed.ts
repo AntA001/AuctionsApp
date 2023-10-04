@@ -3,6 +3,7 @@ import "dotenv/config";
 
 import mikroOrmConfig from "../database/mikro-orm.config";
 import { AuctionSeeder, UserSeeder } from "./seeder";
+import { BidSeeder } from "./seeder/BidSeeder";
 
 (async () => {
   try {
@@ -10,9 +11,14 @@ import { AuctionSeeder, UserSeeder } from "./seeder";
 
     const entityToSeed = process.argv[2];
 
+    console.log("entity to seed", entityToSeed);
+
     let seeder = new UserSeeder();
 
     switch (entityToSeed) {
+      case "bid":
+        seeder = new BidSeeder();
+        break;
       case "auction":
         seeder = new AuctionSeeder();
         break;

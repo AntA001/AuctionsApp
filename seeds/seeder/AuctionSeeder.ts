@@ -8,8 +8,6 @@ import { ItemCategory } from "../../database/types/types";
 export class AuctionSeeder extends BaseSeeder {
   async execute(entityManager: EntityManager): Promise<void> {
     const auctionsCsv = await this.readCsv<AuctionCsv>();
-    console.log("auctions", auctionsCsv);
-
     const auctions = await Promise.all(
       auctionsCsv.map(
         async ({

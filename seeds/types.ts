@@ -16,6 +16,14 @@ export type AuctionCsv = {
   status: AuctionStatus;
 };
 
+export type BidCsv = {
+  user_id: string;
+  auction_id: string;
+  created_at: string;
+  price: number;
+  is_maximum: string;
+};
+
 export type TimeInterval = {
   seconds?: number;
 };
