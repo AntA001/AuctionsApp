@@ -1,11 +1,11 @@
 import { Options, UnderscoreNamingStrategy } from "@mikro-orm/core";
-import { User, Bid, Auction }  from './entities';
+import { UserEntity, BidEntity, AuctionEntity }  from './entities';
 import path from 'path';
 
 
 export default {
     type: 'postgresql',
-    entities: [User, Auction, Bid],
+    entities: [UserEntity, AuctionEntity, BidEntity],
     dbName: process.env.DB_NAME,
     port: 5432,
     host: 'localhost',

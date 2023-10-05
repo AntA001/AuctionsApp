@@ -1,7 +1,7 @@
 import { EntityManager } from "@mikro-orm/core";
 
 import { UserCsv } from "../types";
-import { User } from "../../entities";
+import { UserEntity } from "../../entities";
 import { BaseSeeder } from "./BaseSeeder";
 
 export class UserSeeder extends BaseSeeder {
@@ -10,7 +10,7 @@ export class UserSeeder extends BaseSeeder {
 
     const users = await Promise.all(
       usersCsv.map(async ({ id, name }) => {
-        const existingUser = await entityManager.findOne(User, { id });
+        const existingUser = await entityManager.findOne(UserEntity, { id });
 
         if (existingUser) {
           existingUser.name = name;
@@ -18,7 +18,7 @@ export class UserSeeder extends BaseSeeder {
           return existingUser;
         }
 
-        const newUser = new User({
+        const newUser = new UserEntity({
           id,
           name,
         });

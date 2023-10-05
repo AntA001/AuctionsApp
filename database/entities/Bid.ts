@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { EntityInitData } from "../types/types";
-import { User } from "./User";
-import { Auction } from "./Auction";
+import { UserEntity } from "./User";
+import { AuctionEntity } from "./Auction";
 
-@Entity()
-export class Bid extends BaseEntity {
-    constructor(init: EntityInitData<Bid, 'bidder' | 'auction' | 'price' | 'isMaximum'>) {
+@Entity({ tableName: 'bids' })
+export class BidEntity extends BaseEntity {
+    constructor(init: EntityInitData<BidEntity, 'bidder' | 'auction' | 'price' | 'isMaximum'>) {
         super(init);
         this.bidder= init.bidder;
         this.auction= init.auction;
@@ -15,24 +15,24 @@ export class Bid extends BaseEntity {
     }
 
     @ManyToOne({
-        entity: () => User,
+        entity: () => UserEntity,
         name: 'bidder_id',
         cascade: [],
         onDelete: 'cascade',
         onUpdateIntegrity: 'cascade',
         columnType: 'uuid',
     })
-    bidder: User;
+    bidder: UserEntity;
 
     @ManyToOne({
-        entity: () => Auction,
+        entity: () => AuctionEntity,
         name: 'auction_id',
         cascade: [],
         onDelete: 'cascade',
         onUpdateIntegrity: 'cascade',
         columnType: 'uuid',
     })
-    auction: Auction;
+    auction: AuctionEntity;
 
     @Property({ columnType: 'integer' })
     price: number;

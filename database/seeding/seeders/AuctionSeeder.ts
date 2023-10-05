@@ -1,9 +1,9 @@
 import { EntityManager } from "@mikro-orm/core";
-import { Auction, User } from "../../entities";
+import { AuctionEntity, UserEntity } from "../../entities";
 import { AuctionCsv } from "../types";
 import { BaseSeeder } from "./BaseSeeder";
-import { futureDate } from "../../datetime";
 import { ItemCategory } from "../../types/types";
+import { futureDate } from "../utils";
 
 export class AuctionSeeder extends BaseSeeder {
   async execute(entityManager: EntityManager): Promise<void> {
@@ -21,11 +21,11 @@ export class AuctionSeeder extends BaseSeeder {
             title,
             startPrice,
           }) => {
-            const existingAuction = await entityManager.findOne(Auction, {
+            const existingAuction = await entityManager.findOne(AuctionEntity, {
               id,
             });
 
-            const seller = await entityManager.findOne(User, { id: user_id });
+            const seller = await entityManager.findOne(UserEntity, { id: user_id });
 
             if (!seller) {
               console.warn("cannot find seller ", user_id);
@@ -39,10 +39,7 @@ export class AuctionSeeder extends BaseSeeder {
               terminate_in_s === "" ? 0 : Number(terminate_in_s);
 
             if (existingAuction) {
-              existingAuction.seller = entityManager.getReference(
-                User,
-                user_id
-              );
+              existingAuction.seller = seller;
               existingAuction.category = validCategory;
               existingAuction.title = title;
               existingAuction.description = description;
@@ -55,14 +52,16 @@ export class AuctionSeeder extends BaseSeeder {
               return existingAuction;
             }
 
-            const newAuction = new Auction({
+            console.log()
+
+            const newAuction = new AuctionEntity({
               id,
               title,
               category: validCategory,
               description,
               terminateAt: new Date(futureDate({ seconds: validTerminatedAt })),
               status,
-              seller: entityManager.getReference(User, user_id),
+              seller,
               startPrice,
             });
             return newAuction;

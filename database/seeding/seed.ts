@@ -1,9 +1,9 @@
 import { MikroORM } from "@mikro-orm/postgresql";
 import "dotenv/config";
 
-import mikroOrmConfig from "../database/mikro-orm.config";
-import { AuctionSeeder, UserSeeder } from "./seeding/seeders";
-import { BidSeeder } from "./seeding/seeders/BidSeeder";
+import mikroOrmConfig from "../mikro-orm.config";
+import { AuctionSeeder, UserSeeder } from "./seeders";
+import { BidSeeder } from "./seeders/BidSeeder";
 
 (async () => {
   try {
@@ -16,13 +16,16 @@ import { BidSeeder } from "./seeding/seeders/BidSeeder";
     let seeder = new UserSeeder();
 
     switch (entityToSeed) {
-      case "bid":
+      case "users":
+        break;
+      case "bids":
         seeder = new BidSeeder();
         break;
-      case "auction":
+      case "auctions":
         seeder = new AuctionSeeder();
         break;
       default:
+        throw new Error("Wrong entity to seed name, must be 'users', 'bids', 'auctions'")
         break;
     }
 

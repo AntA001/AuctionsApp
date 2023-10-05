@@ -2,9 +2,9 @@ import {  Entity, Property, Unique } from "@mikro-orm/core";
 import { EntityInitData } from "../types/types";
 import { BaseEntity } from "./BaseEntity";
 
-@Entity()
-export class User extends BaseEntity {
-    constructor(init: EntityInitData<User,'name'>) {
+@Entity({ tableName: 'users'})
+export class UserEntity extends BaseEntity {
+    constructor(init: EntityInitData<UserEntity,'name'>) {
         super(init);
         this.name = init.name;
     }

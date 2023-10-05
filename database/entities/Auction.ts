@@ -1,11 +1,11 @@
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { User } from "./User";
+import { UserEntity } from "./User";
 import { AuctionStatus, EntityInitData, ItemCategory } from "../types/types";
 
-@Entity()
-export class Auction extends BaseEntity {
-    constructor(init: EntityInitData<Auction, 'seller' | 'title' | 'description' | 'category' | 'startPrice' | 'terminateAt' | 'status' >) {
+@Entity({ tableName: 'auctions'})
+export class AuctionEntity extends BaseEntity {
+    constructor(init: EntityInitData<AuctionEntity, 'seller' | 'title' | 'description' | 'category' | 'startPrice' | 'terminateAt' | 'status' >) {
         super(init);
         this.seller = init.seller;
         this.title = init.title;
@@ -17,14 +17,14 @@ export class Auction extends BaseEntity {
     }
 
     @ManyToOne({
-        entity: () => User,
+        entity: () => UserEntity,
         name: 'seller_id',
         cascade: [],
         onDelete: 'cascade',
         onUpdateIntegrity: 'cascade',
         columnType: 'uuid',
       })
-    seller: User;
+    seller: UserEntity;
 
     @Property({ columnType: 'varchar(225)' })
     title: string;

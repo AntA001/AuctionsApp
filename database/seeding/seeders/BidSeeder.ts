@@ -1,7 +1,7 @@
 import { EntityManager } from "@mikro-orm/core";
 import { BidCsv } from "../types";
 import { BaseSeeder } from "./BaseSeeder";
-import { Auction, Bid, User } from "../../entities";
+import { AuctionEntity, BidEntity, UserEntity } from "../../entities";
 import { pastDate } from "../utils";
 
 
@@ -12,8 +12,8 @@ export class BidSeeder extends BaseSeeder {
       await Promise.all(
         bidsCsv.map(
           async ({ user_id, auction_id, created_at, is_maximum, price }) => {
-            const bidder = await entityManager.findOne(User, { id: user_id });
-            const auction = await entityManager.findOne(Auction, {
+            const bidder = await entityManager.findOne(UserEntity, { id: user_id });
+            const auction = await entityManager.findOne(AuctionEntity, {
               id: auction_id,
             });
 
@@ -30,7 +30,7 @@ export class BidSeeder extends BaseSeeder {
             const createdAt = pastDate({ seconds: Number(created_at) });
             const isMaximum = is_maximum === "TRUE";
 
-            const existingBid = await entityManager.findOne(Bid, {
+            const existingBid = await entityManager.findOne(BidEntity, {
               bidder,
               auction,
               isMaximum,
@@ -39,14 +39,16 @@ export class BidSeeder extends BaseSeeder {
             if (existingBid) {
               existingBid.isMaximum = isMaximum;
               existingBid.price = price;
-
+              existingBid.createdAt = createdAt;
+              existingBid.updatedAt = createdAt;
               return existingBid;
             }
 
-            return new Bid({
+            return new BidEntity({
               bidder,
               auction,
               createdAt,
+              updatedAt: createdAt,
               isMaximum,
               price,
             });

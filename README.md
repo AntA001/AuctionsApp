@@ -8,12 +8,13 @@
 ## Setup Database
 
 1. Run the container `docker-compose up -d database`
-2. Sync Db schema `yarn run migration:up`
-3. Seeding data
+1. Install node module `yarn -i`
+1. Sync Db schema `yarn run migration:up`
+1. Seeding data
     ```
-        npx npx ts-node seeder/seed.ts user {{path_to_user_file}}.csv
-        npx npx ts-node seeder/seed.ts auction {{path_to_to_auction_file}}.csv
-        npx npx ts-node seeder/seed.ts bid {{path_to_bid_file}}.csv
+        npx ts-node database/seeding/seed.ts users ./database/seeding/data/users.csv
+        npx ts-node database/seeding/seed.ts auctions ./database/seeding/data/auctions.csv
+        npx ts-node database/seeding/seed.ts bids ./database/seeding/data/bids.csv
     ```
 
 
