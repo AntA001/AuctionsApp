@@ -2,8 +2,8 @@ import { MikroORM } from "@mikro-orm/postgresql";
 import "dotenv/config";
 
 import mikroOrmConfig from "../database/mikro-orm.config";
-import { AuctionSeeder, UserSeeder } from "./seeder";
-import { BidSeeder } from "./seeder/BidSeeder";
+import { AuctionSeeder, UserSeeder } from "./seeding/seeders";
+import { BidSeeder } from "./seeding/seeders/BidSeeder";
 
 (async () => {
   try {

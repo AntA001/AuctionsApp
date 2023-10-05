@@ -1,7 +1,7 @@
 import { EntityManager } from "@mikro-orm/core";
 
 import { UserCsv } from "../types";
-import { User } from "../../database/entities";
+import { User } from "../../entities";
 import { BaseSeeder } from "./BaseSeeder";
 
 export class UserSeeder extends BaseSeeder {

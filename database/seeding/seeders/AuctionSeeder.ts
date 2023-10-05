@@ -1,9 +1,9 @@
 import { EntityManager } from "@mikro-orm/core";
-import { Auction, User } from "../../database/entities";
+import { Auction, User } from "../../entities";
 import { AuctionCsv } from "../types";
 import { BaseSeeder } from "./BaseSeeder";
-import { futureDate } from "../datetime";
-import { ItemCategory } from "../../database/types/types";
+import { futureDate } from "../../datetime";
+import { ItemCategory } from "../../types/types";
 
 export class AuctionSeeder extends BaseSeeder {
   async execute(entityManager: EntityManager): Promise<void> {

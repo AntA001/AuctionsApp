@@ -1,4 +1,4 @@
-import { AuctionStatus, ItemCategory } from "../database/types/types";
+import { AuctionStatus, ItemCategory } from "../types/types";
 
 export type UserCsv = {
   id: string;
