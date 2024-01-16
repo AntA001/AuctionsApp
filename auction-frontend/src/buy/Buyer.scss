@@ -1,0 +1,16 @@
+a {
+  color: #000;
+  text-decoration: none;
+  &.active {
+    text-decoration: underline;
+  }
+}
+
+.divider {
+  border-bottom: 2px solid #f5efe5ff;
+}
+
+.nav-link {
+  font-size: 20px;
+  font-weight: bold;
+}
