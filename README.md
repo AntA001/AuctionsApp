@@ -33,6 +33,10 @@
     1. Create new migration file: `yarn run migration:create`
     1. Sync DB to lastest migration: `yarn run migration:up`
 
+### Deleting database
+
+Delete `pgdata` folder
+
 
 ## Frontend
 
