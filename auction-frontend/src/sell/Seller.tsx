@@ -1,7 +1,7 @@
-import React from 'react'
-import { Container } from 'react-bootstrap'
-import { NavLink, Outlet } from 'react-router-dom'
-import './Seller.scss'
+import React from 'react';
+import { Container } from 'react-bootstrap';
+import { NavLink, Outlet } from 'react-router-dom';
+import './Seller.scss';
 
 export default function Seller() {
   return (
@@ -19,5 +19,5 @@ export default function Seller() {
       </Container>
       <Outlet />
     </>
-  )
+  );
 }

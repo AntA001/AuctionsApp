@@ -1,17 +1,19 @@
-import React, { useMemo, useState } from 'react'
-import { Col, Container, Form, Row } from 'react-bootstrap'
-import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
-import { Form as RouterForm } from 'react-router-dom'
-import { ItemCategory, Value } from '../buy/Auction'
-import DateTimePicker from 'react-datetime-picker'
-import 'react-datetime-picker/dist/DateTimePicker.css'
-import 'react-calendar/dist/Calendar.css'
-import 'react-clock/dist/Clock.css'
-import { useAuth } from '../auth/AuthProvider'
+/* eslint-disable import/no-named-as-default */
+import React, { useMemo, useState } from 'react';
+import { Col, Container, Form, Row } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import DateTimePicker from 'react-datetime-picker';
+import { Form as RouterForm } from 'react-router-dom';
+
+import { useAuth } from '../auth/AuthProvider';
+import { ItemCategory, Value } from '../buy/Auction';
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
 
 export async function action({ request }: { request: Request }) {
-  const formData = await request.formData()
+  const formData = await request.formData();
   const {
     title,
     category,
@@ -20,7 +22,7 @@ export async function action({ request }: { request: Request }) {
     terminateAt,
     second,
     seller,
-  } = Object.fromEntries(formData)
+  } = Object.fromEntries(formData);
 
   const body = JSON.stringify({
     title,
@@ -32,28 +34,28 @@ export async function action({ request }: { request: Request }) {
       (terminateAt as string) +
       ':' +
       ((second as string).length === 1 ? '0' + second : second),
-  })
+  });
 
   const res = await fetch(`${process.env.REACT_APP_API_URL}/auctions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: body,
-  })
+  });
 
-  const auction = await res.json()
-  return { auction }
+  const auction = await res.json();
+  return { auction };
 }
 
 export function CreateAuctionModal({
   show,
   onHide,
 }: {
-  show: boolean
-  onHide: () => void
+  show: boolean;
+  onHide: () => void;
 }) {
-  const categories = useMemo(() => Object.values(ItemCategory), [])
-  const [value, setValue] = useState<Value>(new Date())
-  const { user } = useAuth()
+  const categories = useMemo(() => Object.values(ItemCategory), []);
+  const [value, setValue] = useState<Value>(new Date());
+  const { user } = useAuth();
 
   return (
     <Modal
@@ -81,7 +83,12 @@ export function CreateAuctionModal({
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Category</Form.Label>
-            <Form.Select name="category" className="form-control" required>
+            <Form.Select
+              aria-label="Select a category"
+              name="category"
+              className="form-control"
+              required
+            >
               <option value="">Choose one option</option>
               {categories.map((c) => (
                 <option key={c}>{c}</option>
@@ -151,5 +158,5 @@ export function CreateAuctionModal({
         </Modal.Footer>
       </RouterForm>
     </Modal>
-  )
+  );
 }

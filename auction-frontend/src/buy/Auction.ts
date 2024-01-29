@@ -1,4 +1,4 @@
-import { User } from '../auth/User'
+import { User } from '../auth/User';
 
 export enum ItemCategory {
   VEHICLE = 'VEHICLE',
@@ -21,17 +21,17 @@ enum AuctionStatus {
   FINISHED = 'FINISHED',
 }
 export interface Auction {
-  id: string
-  createdAt: string
-  updatedAt: string
-  seller: User
-  title: string
-  description: string
-  category: ItemCategory
-  startPrice: number
-  terminateAt: string
-  status: AuctionStatus
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  seller: User;
+  title: string;
+  description: string;
+  category: ItemCategory;
+  startPrice: number;
+  terminateAt: string;
+  status: AuctionStatus;
 }
 
-type ValuePiece = Date | null
-export type Value = ValuePiece | [ValuePiece, ValuePiece]
+type ValuePiece = Date | null;
+export type Value = ValuePiece | [ValuePiece, ValuePiece];

@@ -1,45 +1,47 @@
-import React, { useEffect, useMemo } from 'react'
-import { Form as RouterForm, useActionData } from 'react-router-dom'
-import Form from 'react-bootstrap/Form'
-import { Container } from 'react-bootstrap'
-import ToastMessage from '../util/Toast'
-import { useAuth } from './AuthProvider'
-import { User } from './User'
+import React, { useEffect, useMemo } from 'react';
+import { Container } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import { Form as RouterForm, useActionData } from 'react-router-dom';
+
+import ToastMessage from '../util/Toast';
+
+import { useAuth } from './AuthProvider';
+import { User } from './User';
 
 export async function action({ request }: { request: Request }) {
-  const formData = await request.formData()
-  const userData = Object.fromEntries(formData)
+  const formData = await request.formData();
+  const userData = Object.fromEntries(formData);
 
-  const body = JSON.stringify(userData)
+  const body = JSON.stringify(userData);
 
   const res = await fetch(`${process.env.REACT_APP_API_URL}/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: body,
-  })
+  });
   if (res.status === 400) {
-    const error = await res.json()
-    return { error }
+    const error = await res.json();
+    return { error };
   } else {
-    const user = await res.json()
-    return { user }
+    const user = await res.json();
+    return { user };
   }
 }
 
 export default function Login() {
-  const actionData = useActionData() as Record<string, User | Error>
-  const { login } = useAuth()
+  const actionData = useActionData() as Record<string, User | Error>;
+  const { login } = useAuth();
 
   const errorMessage = useMemo(
     () => (actionData?.error && (actionData.error as Error))?.message,
     [actionData],
-  )
+  );
 
   useEffect(() => {
     if (actionData?.user) {
-      login(actionData.user as User)
+      login(actionData.user as User);
     }
-  }, [actionData])
+  }, [actionData]);
 
   return (
     <Container
@@ -74,5 +76,5 @@ export default function Login() {
         />
       </div>
     </Container>
-  )
+  );
 }

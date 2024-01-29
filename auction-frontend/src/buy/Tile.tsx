@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react'
-import { Auction } from './Auction'
-import { Col, Container, ListGroupItem, Row } from 'react-bootstrap'
-import './Tile.scss'
-import { timeLeft } from '../util/format-helper'
+import React, { useCallback } from 'react';
+import { Col, Container, ListGroupItem, Row } from 'react-bootstrap';
+
+import './Tile.scss';
+import { timeLeft } from '../util/format-helper';
+
+import { Auction } from './Auction';
 
 export function AuctionTile({ auction }: { auction: Auction }) {
-  const expiresIn = useCallback((date: string) => timeLeft(date), [])
+  const expiresIn = useCallback((date: string) => timeLeft(date), []);
 
   return (
     <ListGroupItem
@@ -27,5 +29,5 @@ export function AuctionTile({ auction }: { auction: Auction }) {
         </Row>
       </Container>
     </ListGroupItem>
-  )
+  );
 }

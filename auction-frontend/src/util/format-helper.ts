@@ -1,4 +1,4 @@
-import moment from 'moment/moment'
+import moment from 'moment/moment';
 
 export const timeLeft = (date: string) => {
   return (
@@ -10,5 +10,5 @@ export const timeLeft = (date: string) => {
       .replace('days', 'd')
       .replace('a day', '1d')
       .replace(/\s/, '') + ' left'
-  )
-}
+  );
+};

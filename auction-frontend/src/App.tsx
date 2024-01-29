@@ -1,33 +1,34 @@
-import React, { Suspense, useEffect } from 'react'
-import { Await, defer, Outlet, useLoaderData } from 'react-router-dom'
-import { AuthProvider, useAuth } from './auth/AuthProvider'
-import { Alert, Spinner } from 'react-bootstrap'
-import { User } from './auth/User'
+import React, { Suspense, useEffect } from 'react';
+import { Alert, Spinner } from 'react-bootstrap';
+import { Await, defer, Outlet, useLoaderData } from 'react-router-dom';
+
+import { AuthProvider, useAuth } from './auth/AuthProvider';
+import { User } from './auth/User';
 
 export const loader = async () => {
-  const userId = localStorage.getItem('user')
+  const userId = localStorage.getItem('user');
   if (userId) {
     const fetchUser = fetch(
       `${process.env.REACT_APP_API_URL}/users/${userId}`,
-    ).then((res) => res.json())
-    return defer({ user: fetchUser })
+    ).then((res) => res.json());
+    return defer({ user: fetchUser });
   }
-  return { user: null }
-}
+  return { user: null };
+};
 
 type AuthData = {
-  user: User
-}
+  user: User;
+};
 
 export default function App() {
-  const { user } = useLoaderData() as AuthData
-  const { login } = useAuth()
+  const { user } = useLoaderData() as AuthData;
+  const { login } = useAuth();
 
   useEffect(() => {
     if (user) {
-      login(user)
+      login(user);
     }
-  }, [user])
+  }, [user]);
 
   return (
     <Suspense fallback={<Spinner animation="grow" />}>
@@ -46,5 +47,5 @@ export default function App() {
         )}
       </Await>
     </Suspense>
-  )
+  );
 }

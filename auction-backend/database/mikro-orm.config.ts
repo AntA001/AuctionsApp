@@ -1,15 +1,15 @@
-import { Options, UnderscoreNamingStrategy } from '@mikro-orm/core'
-import { AuctionEntity, BidEntity, UserEntity } from './entities'
-import path from 'path'
+import { Options, UnderscoreNamingStrategy } from '@mikro-orm/core';
+import { AuctionEntity, BidEntity, UserEntity } from './entities';
+import path from 'path';
 
 export default {
   type: 'postgresql',
   entities: [UserEntity, AuctionEntity, BidEntity],
-  dbName: process.env.DB_NAME,
+  dbName: 'auction-db',
   port: 5432,
   host: 'localhost',
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  user: 'postgres',
+  password: 'password',
   namingStrategy: UnderscoreNamingStrategy,
   debug: true,
   forceUtcTimezone: true,
@@ -21,4 +21,4 @@ export default {
     disableForeignKeys: true,
   },
   allowGlobalContext: true,
-} as Options
+} as Options;

@@ -1,12 +1,13 @@
-import { Navigate, Outlet } from 'react-router-dom'
-import React from 'react'
-import { useAuth } from './AuthProvider'
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+
+import { useAuth } from './AuthProvider';
 
 export default function PublicLayout() {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   if (user) {
-    return <Navigate to="/" />
+    return <Navigate to="/" />;
   }
   return (
     <div className="app">
@@ -15,5 +16,5 @@ export default function PublicLayout() {
       </header>
       <Outlet />
     </div>
-  )
+  );
 }

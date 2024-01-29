@@ -1,13 +1,14 @@
-import { Navigate, NavLink, Outlet } from 'react-router-dom'
-import { useAuth } from './AuthProvider'
-import React from 'react'
-import { Button } from 'react-bootstrap'
+import React from 'react';
+import { Button } from 'react-bootstrap';
+import { Navigate, NavLink, Outlet } from 'react-router-dom';
+
+import { useAuth } from './AuthProvider';
 
 export default function PrivateLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
 
   if (!user) {
-    return <Navigate to="/login" />
+    return <Navigate to="/login" />;
   }
 
   return (
@@ -50,5 +51,5 @@ export default function PrivateLayout() {
       </header>
       <Outlet />
     </div>
-  )
+  );
 }

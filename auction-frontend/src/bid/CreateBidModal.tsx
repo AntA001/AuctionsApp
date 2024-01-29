@@ -1,33 +1,34 @@
-import React from 'react'
-import { Col, Container, Form, Row } from 'react-bootstrap'
-import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
-import { Form as RouterForm } from 'react-router-dom'
-import { Auction } from '../buy/Auction'
-import 'react-datetime-picker/dist/DateTimePicker.css'
-import 'react-calendar/dist/Calendar.css'
-import 'react-clock/dist/Clock.css'
-import { timeLeft } from '../util/format-helper'
-import { useAuth } from '../auth/AuthProvider'
+import React from 'react';
+import { Col, Container, Form, Row } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { Form as RouterForm } from 'react-router-dom';
+
+import { useAuth } from '../auth/AuthProvider';
+import { Auction } from '../buy/Auction';
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
+import { timeLeft } from '../util/format-helper';
 
 export async function action({ request }: { request: Request }) {
-  const formData = await request.formData()
-  const { price, isMaximum, bidder, auction } = Object.fromEntries(formData)
+  const formData = await request.formData();
+  const { price, isMaximum, bidder, auction } = Object.fromEntries(formData);
 
   const body = JSON.stringify({
     price,
     isMaximum,
     bidder,
     auction,
-  })
+  });
 
   const res = await fetch(`${process.env.REACT_APP_API_URL}/bids`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: body,
-  })
-  const bid = await res.json()
-  return { bid }
+  });
+  const bid = await res.json();
+  return { bid };
 }
 
 export function CreateBidModal({
@@ -35,11 +36,11 @@ export function CreateBidModal({
   show,
   onHide,
 }: {
-  auction: Auction
-  show: boolean
-  onHide: () => void
+  auction: Auction;
+  show: boolean;
+  onHide: () => void;
 }) {
-  const { user } = useAuth()
+  const { user } = useAuth();
   return (
     <Modal
       show={show}
@@ -125,5 +126,5 @@ export function CreateBidModal({
         </Modal.Footer>
       </RouterForm>
     </Modal>
-  )
+  );
 }
