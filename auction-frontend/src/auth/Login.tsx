@@ -12,6 +12,8 @@ import ToastMessage from '../util/Toast';
 import { useAuth } from './AuthProvider';
 import { User } from './User';
 
+import './Login.scss';
+
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const userData = Object.fromEntries(formData);
@@ -69,23 +71,20 @@ export default function Login() {
   }, [actionData, login, navigate]);
 
   return (
-    <Container
-      style={{ height: '90vh' }}
-      className="d-flex flex-column align-items-center justify-content-center"
-    >
-      <div
-        style={{ height: '250px' }}
-        className="d-flex flex-column justify-content-between"
-      >
-        <h1 style={{ textAlign: 'center' }}>WELCOME</h1>
+    <Container className="login-container">
+      <div className="login-box">
+        <h1 className="login-title">WELCOME</h1>
 
         <RouterForm method="post">
-          <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Group
+            className="login-input-container"
+            controlId="formBasicEmail"
+          >
             <Form.Label>Subscribe/Login</Form.Label>
             <Form.Control
               name="name"
               type="text"
-              className="form-control"
+              className="login-input"
               placeholder="Enter your name"
               required
               onSubmit={() => console.log('jaaa')}
@@ -93,7 +92,7 @@ export default function Login() {
           </Form.Group>
         </RouterForm>
       </div>
-      <div className="position-absolute" style={{ top: '10vh', right: 10 }}>
+      <div className="toast-message">
         <ToastMessage
           show={!!(actionData?.error as Error)}
           message={errorMessage}

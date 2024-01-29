@@ -1,0 +1,19 @@
+.nav-link-container {
+  padding: 15px 0px 0px 25px;
+  background-color: transparent;
+  display: flex;
+  gap: 10px;
+
+  .nav-link {
+    padding: 15px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+    background-color: #f5efe5ff;
+    border-radius: 0.25rem;
+
+    &.active {
+      background-color: rgb(222, 200, 160);
+    }
+  }
+}

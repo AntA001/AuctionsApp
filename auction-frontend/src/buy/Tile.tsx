@@ -10,10 +10,7 @@ export function AuctionTile({ auction }: { auction: Auction }) {
   const expiresIn = useCallback((date: string) => timeLeft(date), []);
 
   return (
-    <ListGroupItem
-      style={{ backgroundColor: '#f8f7f6ff' }}
-      className="my-2 border-2 rounded-3"
-    >
+    <ListGroupItem className="list-group-item">
       <Container>
         <Row className="align-items-center" style={{ height: '125px' }}>
           <Col sm={6}>

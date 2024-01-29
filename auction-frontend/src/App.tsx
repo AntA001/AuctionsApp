@@ -11,6 +11,8 @@ import {
 import { AuthProvider, useAuth } from './auth/AuthProvider';
 import { User } from './auth/User';
 
+import './App.scss';
+
 export const loader = async () => {
   const userId = localStorage.getItem('user');
   if (userId) {

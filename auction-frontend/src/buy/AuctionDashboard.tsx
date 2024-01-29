@@ -10,6 +10,8 @@ import ToastMessage from '../util/Toast';
 import { Auction } from './Auction';
 import { AuctionTile } from './Tile';
 
+import './AuctionDashboard.scss';
+
 export const loader = async () => {
   const userId = localStorage.getItem('user');
   const auctions = await fetch(
@@ -52,9 +54,9 @@ export default function AuctionDashboard() {
   };
 
   return (
-    <Container>
+    <Container className="auctionDash-container">
       {data.length && (
-        <div className="mt-3 mb-1">
+        <div className="auction-count">
           <strong>{data.length}</strong> auctions found:
         </div>
       )}
@@ -69,7 +71,7 @@ export default function AuctionDashboard() {
           </div>
         }
         endMessage={
-          <p style={{ textAlign: 'center' }}>
+          <p className="end-message">
             <b>You have seen it all</b>
           </p>
         }
@@ -93,7 +95,7 @@ export default function AuctionDashboard() {
           onHide={() => setModalShow(false)}
         />
       )}
-      <div className="position-absolute" style={{ top: '10vh', right: 10 }}>
+      <div className="toast-message">
         <ToastMessage
           show={!!createData}
           message={`You successfully created on ${selected?.title}`}

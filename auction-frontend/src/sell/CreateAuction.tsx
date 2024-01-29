@@ -49,7 +49,7 @@ export default function CreateAuction() {
         ))}
       </ListGroup>
       <CreateAuctionModal show={modalShow} onHide={() => setModalShow(false)} />
-      <div className="position-absolute" style={{ top: '10vh', right: 10 }}>
+      <div className="toast-position">
         <ToastMessage
           show={!!createData}
           message={`You successfully created on ${createData?.auction?.title}`}

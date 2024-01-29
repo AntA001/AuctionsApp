@@ -1,22 +1,11 @@
-import React from 'react';
-import { Container } from 'react-bootstrap';
-import { NavLink, Outlet } from 'react-router-dom';
-import './Seller.scss';
+import { Outlet } from 'react-router-dom';
+
+import NavigationComponent from '../components/NavigationComponent';
 
 export default function Seller() {
   return (
     <>
-      <Container className="px-4 overflow-visible" fluid>
-        <NavLink
-          to="create"
-          className={({ isActive }) =>
-            isActive ? 'active nav-link' : 'nav-link'
-          }
-        >
-          My auctions
-        </NavLink>
-        <div className="divider" />
-      </Container>
+      <NavigationComponent to="create" text="My auctions" />
       <Outlet />
     </>
   );
