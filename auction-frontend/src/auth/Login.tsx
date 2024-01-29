@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 import { Container } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
-import { Form as RouterForm, useActionData } from 'react-router-dom';
+import {
+  useNavigate,
+  Form as RouterForm,
+  useActionData,
+} from 'react-router-dom';
 
 import ToastMessage from '../util/Toast';
 
@@ -24,6 +28,20 @@ export async function action({ request }: { request: Request }) {
     return { error };
   } else {
     const user = await res.json();
+    const firstLoginCheckDone = localStorage.getItem('firstLoginCheckDone');
+    if (!firstLoginCheckDone) {
+      const sellerResponse = await fetch(
+        `${process.env.REACT_APP_API_URL}/auctions/seller/${user.id}`,
+      );
+      if (sellerResponse.ok) {
+        const sellerData = await sellerResponse.json();
+        const isSeller = sellerData?.length > 0;
+        user.isSeller = isSeller; // Attach isSeller property to user object
+      }
+      // Mark that the first login check has been done
+      localStorage.setItem('firstLoginCheckDone', 'true');
+    }
+
     return { user };
   }
 }
@@ -31,6 +49,7 @@ export async function action({ request }: { request: Request }) {
 export default function Login() {
   const actionData = useActionData() as Record<string, User | Error>;
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const errorMessage = useMemo(
     () => (actionData?.error && (actionData.error as Error))?.message,
@@ -40,8 +59,14 @@ export default function Login() {
   useEffect(() => {
     if (actionData?.user) {
       login(actionData.user as User);
+      // Redirect based on isSeller status
+      if ((actionData.user as User).isSeller) {
+        navigate('/seller');
+      } else {
+        navigate('/buyer');
+      }
     }
-  }, [actionData]);
+  }, [actionData, login, navigate]);
 
   return (
     <Container

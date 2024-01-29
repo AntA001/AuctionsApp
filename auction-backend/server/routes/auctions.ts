@@ -1,11 +1,11 @@
-import { Request, Response, Router } from 'express'
-import { DI } from '../app'
-import { QueryOrder } from '@mikro-orm/core'
+import { Request, Response, Router } from 'express';
+import { DI } from '../app';
+import { QueryOrder } from '@mikro-orm/core';
 
-const router = Router()
+const router = Router();
 
 router.get('/buyer/:id', async (req: Request, res: Response) => {
-  const { page, limit } = req.query
+  const { page, limit } = req.query;
   const [auctions] = await DI.auctionRepository.findAndCount(
     {
       $not: { seller: req.params.id },
@@ -15,27 +15,27 @@ router.get('/buyer/:id', async (req: Request, res: Response) => {
       orderBy: { terminateAt: QueryOrder.ASC },
       limit: Number(limit),
       offset: Number(page) * Number(limit),
-    },
-  )
-  res.json(auctions)
-})
+    }
+  );
+  res.json(auctions);
+});
 
 router.get('/seller/:id', async (req: Request, res: Response) => {
   const auctions = await DI.auctionRepository.find({
     seller: req.params.id,
-  })
-  res.json(auctions)
-})
+  });
+  res.json(auctions);
+});
 
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const auction = DI.auctionRepository.create(req.body)
-    await DI.orm.em.persistAndFlush(auction)
+    const auction = DI.auctionRepository.create(req.body);
+    await DI.orm.em.persistAndFlush(auction);
 
-    res.json(auction)
+    res.json(auction);
   } catch (e: any) {
-    return res.status(400).json({ message: e.message })
+    return res.status(400).json({ message: e.message });
   }
-})
+});
 
-export const AuctionController = router
+export const AuctionController = router;

@@ -1,6 +1,12 @@
 import React, { Suspense, useEffect } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
-import { Await, defer, Outlet, useLoaderData } from 'react-router-dom';
+import {
+  Await,
+  defer,
+  Outlet,
+  useLoaderData,
+  useNavigate,
+} from 'react-router-dom';
 
 import { AuthProvider, useAuth } from './auth/AuthProvider';
 import { User } from './auth/User';
@@ -8,27 +14,37 @@ import { User } from './auth/User';
 export const loader = async () => {
   const userId = localStorage.getItem('user');
   if (userId) {
-    const fetchUser = fetch(
-      `${process.env.REACT_APP_API_URL}/users/${userId}`,
-    ).then((res) => res.json());
-    return defer({ user: fetchUser });
+    //Added error checking with a try catch block
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/${userId}`,
+      );
+      if (response.ok) {
+        const user = await response.json();
+        return defer({ user });
+      }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+    }
   }
-  return { user: null };
+  return defer({ user: null });
 };
 
+//In case loader returns null we need to be able to accept it as a type
 type AuthData = {
-  user: User;
+  user: User | null;
 };
 
 export default function App() {
   const { user } = useLoaderData() as AuthData;
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
       login(user);
     }
-  }, [user]);
+  }, [user, login, navigate]);
 
   return (
     <Suspense fallback={<Spinner animation="grow" />}>

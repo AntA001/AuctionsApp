@@ -3,4 +3,5 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   name: string;
+  isSeller?: boolean;
 }

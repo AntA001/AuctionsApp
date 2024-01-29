@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { User } from './User';
 
@@ -28,15 +29,18 @@ export const AuthProvider = ({
   payload: User;
 }) => {
   const [user, setUser] = useState<User | null>(payload);
+  const navigate = useNavigate();
 
   const login = (user: User) => {
-    localStorage.setItem('user', user.id);
     setUser(user);
+    localStorage.setItem('user', user.id);
   };
 
   const logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('firstLoginCheckDone'); // Clear the first login check flag
     setUser(null);
+    navigate('/login');
   };
 
   const value = useMemo(
