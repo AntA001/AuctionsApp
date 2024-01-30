@@ -8,12 +8,13 @@
     padding: 15px;
     font-weight: bold;
     text-decoration: none;
-    transition: color 0.3s ease-in-out;
+    transition: color 0.2s ease-in-out;
     background-color: #f5efe5ff;
-    border-radius: 0.25rem;
+    border-radius: 0.75rem;
 
     &.active {
-      background-color: rgb(222, 200, 160);
+      background-color: #4b4b4b;
+      color: white;
     }
   }
 }

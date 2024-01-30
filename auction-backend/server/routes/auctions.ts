@@ -6,7 +6,8 @@ const router = Router();
 
 router.get('/buyer/:id', async (req: Request, res: Response) => {
   const { page, limit } = req.query;
-  const [auctions] = await DI.auctionRepository.findAndCount(
+  //Also fetch totalCount of rows
+  const [auctions, totalCount] = await DI.auctionRepository.findAndCount(
     {
       $not: { seller: req.params.id },
     },
@@ -17,7 +18,7 @@ router.get('/buyer/:id', async (req: Request, res: Response) => {
       offset: Number(page) * Number(limit),
     }
   );
-  res.json(auctions);
+  res.json({ auctions, totalCount });
 });
 
 router.get('/seller/:id', async (req: Request, res: Response) => {

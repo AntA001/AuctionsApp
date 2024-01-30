@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useActionData, useLoaderData } from 'react-router-dom';
+import { useActionData } from 'react-router-dom';
 
 import { Bid } from '../bid/bid';
 import { CreateBidModal } from '../bid/CreateBidModal';
@@ -21,49 +21,75 @@ export const loader = async () => {
   return { auctions };
 };
 
-type LoadAuctionData = {
-  auctions: Auction[];
-};
-
 type CreateBidData = {
   bid: Bid;
 };
 
 export default function AuctionDashboard() {
-  const { auctions } = useLoaderData() as LoadAuctionData;
   const createData = useActionData() as CreateBidData;
   const [data, setData] = useState<Auction[]>([]);
+  const [totalCount, setTotalCount] = useState(0); // Added totalCount
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [modalShow, setModalShow] = useState(false);
   const [selected, setSelected] = useState<Auction | null>(null);
 
+  const fetchAuctions = async (page: number) => {
+    try {
+      const userId = localStorage.getItem('user');
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auctions/buyer/${userId}?page=${page}&limit=20`,
+      );
+      const jsonResponse = await response.json();
+      return jsonResponse;
+    } catch (error) {
+      console.error('Failed to fetch auctions:', error);
+      return { auctions: [], totalCount: 0 }; // Return a default structure in case of an error
+    }
+  };
+
+  // Effect to reset and fetch initial data on mount
   useEffect(() => {
-    setData(auctions);
-  }, [auctions]);
+    const initFetch = async () => {
+      if (data.length === 0) {
+        const { auctions, totalCount } = await fetchAuctions(0);
+        setData(auctions);
+        setTotalCount(totalCount); // Set total count from the initial fetch
+        setPage(1);
+        setHasMore(auctions.length === 20);
+      }
+    };
+
+    initFetch();
+
+    return () => {
+      setData([]);
+      setTotalCount(0);
+      setPage(0);
+      setHasMore(true);
+    };
+  }, []);
 
   const next = async () => {
-    const userId = localStorage.getItem('user');
-    const nextPage = page + 1;
-    setPage(nextPage);
-    const nextData: Auction[] = await fetch(
-      `${process.env.REACT_APP_API_URL}/auctions/buyer/${userId}?page=${nextPage}&limit=20`,
-    ).then((res) => res.json());
-    setData([...data, ...nextData]);
-    if (nextData.length < 20) setHasMore(false);
+    const { auctions: nextPageData } = await fetchAuctions(page);
+    setData((prevData) => [...prevData, ...nextPageData]);
+    setPage((prevPage) => prevPage + 1);
+    if (nextPageData.length < 20) setHasMore(false);
   };
 
   return (
     <Container className="auctionDash-container">
       {data.length && (
+        //Changed auction count to be more dynamic
         <div className="auction-count">
-          <strong>{data.length}</strong> auctions found:
+          Showing <strong>{data.length}</strong> of{' '}
+          <strong>{totalCount}</strong> Auctions
         </div>
       )}
       <InfiniteScroll
         dataLength={data.length}
         next={next}
-        height={600}
+        height={`70vh`}
         hasMore={hasMore}
         loader={
           <div className="d-flex justify-content-center">

@@ -61,12 +61,15 @@ export default function Login() {
   useEffect(() => {
     if (actionData?.user) {
       login(actionData.user as User);
-      // Redirect based on isSeller status
-      if ((actionData.user as User).isSeller) {
-        navigate('/seller');
-      } else {
-        navigate('/buyer');
-      }
+      // Redirect based on isSeller status (directly to the subpage since there is only 1 at the moment)
+      // Timeeout with 0ms to defer navigation until after pending state updates and re-renders.
+      setTimeout(() => {
+        if ((actionData.user as User).isSeller) {
+          navigate('/seller/create');
+        } else {
+          navigate('/buyer/auctions');
+        }
+      }, 0);
     }
   }, [actionData, login, navigate]);
 

@@ -21,7 +21,7 @@ export default function PrivateLayout() {
             </li>
             <li className="role-container">
               <NavLink
-                to="/buyer"
+                to="/buyer/auctions"
                 className={({ isActive, isPending }) =>
                   isActive ? 'active' : isPending ? 'pending' : ''
                 }
@@ -29,7 +29,7 @@ export default function PrivateLayout() {
                 Buyer
               </NavLink>
               <NavLink
-                to="/seller"
+                to="/seller/create"
                 className={({ isActive, isPending }) =>
                   isActive ? 'active' : isPending ? 'pending' : ''
                 }
@@ -38,11 +38,7 @@ export default function PrivateLayout() {
               </NavLink>
             </li>
             <li>
-              <Button
-                variant="link"
-                style={{ color: 'black', textDecoration: 'none' }}
-                onClick={logout}
-              >
+              <Button variant="link" className="button-logout" onClick={logout}>
                 Logout
               </Button>
             </li>

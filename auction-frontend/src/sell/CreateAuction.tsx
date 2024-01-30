@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Container, ListGroup } from 'react-bootstrap';
 import { Plus } from 'react-bootstrap-icons';
-import './CreateAuction.scss';
 import { useActionData, useLoaderData } from 'react-router-dom';
 
 import { Auction } from '../buy/Auction';
@@ -9,6 +8,8 @@ import { AuctionTile } from '../buy/Tile';
 import ToastMessage from '../util/Toast';
 
 import { CreateAuctionModal } from './CreateAuctionModal';
+
+import './CreateAuction.scss';
 
 export const loader = async () => {
   const userId = localStorage.getItem('user');
@@ -33,7 +34,7 @@ export default function CreateAuction() {
   const createData = useActionData() as CreateAuctionData;
 
   return (
-    <Container>
+    <Container className="create-auction-container">
       <div className="button-container">
         <Button
           variant="outline-light"
@@ -49,7 +50,7 @@ export default function CreateAuction() {
         ))}
       </ListGroup>
       <CreateAuctionModal show={modalShow} onHide={() => setModalShow(false)} />
-      <div className="toast-position">
+      <div className="toast-message">
         <ToastMessage
           show={!!createData}
           message={`You successfully created on ${createData?.auction?.title}`}
