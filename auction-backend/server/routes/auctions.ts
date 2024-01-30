@@ -1,6 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { DI } from '../app';
 import { QueryOrder } from '@mikro-orm/core';
+import { AuctionStatus } from '../../database/types/types';
 
 const router = Router();
 
@@ -9,7 +10,10 @@ router.get('/buyer/:id', async (req: Request, res: Response) => {
   //Also fetch totalCount of rows
   const [auctions, totalCount] = await DI.auctionRepository.findAndCount(
     {
-      $not: { seller: req.params.id },
+      $and: [
+        { seller: { $ne: req.params.id } },
+        { status: { $ne: AuctionStatus.FINISHED } },
+      ],
     },
     {
       populate: ['seller'],

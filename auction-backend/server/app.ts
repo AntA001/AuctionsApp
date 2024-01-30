@@ -11,6 +11,7 @@ import {
 import { AuctionEntity, BidEntity, UserEntity } from '../database/entities';
 import { AuctionController, BidController, UserController } from './routes';
 import 'dotenv/config';
+import { startScheduledTasks } from './Tasks/scheduleTasks'; // Adjust the path as necessary
 
 export const DI = {} as {
   server: http.Server;
@@ -51,5 +52,6 @@ export const init = (async () => {
     console.log(
       `MikroORM express TS example started at http://localhost:${port}`
     );
+    startScheduledTasks();
   });
 })();
