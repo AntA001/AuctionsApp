@@ -10,17 +10,26 @@ const updateAuctionStatuses = async () => {
     status: { $ne: AuctionStatus.FINISHED },
   });
 
+  let updated = false;
   for (const auction of auctionsToUpdate) {
     auction.status = AuctionStatus.FINISHED;
+    updated = true;
   }
   await DI.auctionRepository.flush();
+
+  // If any status updated Emit an event to all connected clients to indicate that auction data has been updated
+  if (updated) {
+    DI.io.emit('auctionsUpdated');
+  }
+
   console.log(
     `Updated ${auctionsToUpdate.length} auction(s) to FINISHED status.`
   );
 };
 
 //Updates the auctions statuses in the DB every minute
-//This should ideally run in a worker to not overload the main server
+//TODO: This should ideally run in a worker to not overload the main server
+//? But I suspect this would be out of the scope of the project
 export const startScheduledTasks = () => {
   const task = cron.schedule(
     '*/1 * * * *',

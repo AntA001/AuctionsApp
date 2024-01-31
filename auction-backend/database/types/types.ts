@@ -1,15 +1,15 @@
-import { BaseEntity } from '../entities/BaseEntity'
+import { BaseEntity } from '../entities/BaseEntity';
 
-export type UUID = string
+export type UUID = string;
 
 export type EntityInitData<
   EntityType extends BaseEntity,
-  RequiredKeys extends keyof EntityType,
+  RequiredKeys extends keyof EntityType
 > = Pick<EntityType, RequiredKeys> & {
-  id?: string
-  createdAt?: Date
-  updatedAt?: Date
-}
+  id?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 export enum ItemCategory {
   VEHICLE = 'VEHICLE',
@@ -28,6 +28,6 @@ export enum ItemCategory {
 
 export enum AuctionStatus {
   ON_GOING = 'ON_GOING',
-  ON_HOLD = 'ON_HOLD',
+  ON_HOLD = 'ON_HOLD', //It was not mentioned in the requirements so I do not have an implementation for this
   FINISHED = 'FINISHED',
 }

@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import http from 'http';
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
+import { Server as SocketIOServer } from 'socket.io';
 import {
   EntityManager,
   EntityRepository,
@@ -20,6 +21,7 @@ export const DI = {} as {
   userRepository: EntityRepository<UserEntity>;
   auctionRepository: EntityRepository<AuctionEntity>;
   bidRepository: EntityRepository<BidEntity>;
+  io: SocketIOServer;
 };
 
 export const app = express();
@@ -48,10 +50,23 @@ export const init = (async () => {
   app.use('/bids', BidController);
   app.use((req, res) => res.status(404).json({ message: 'No route found' }));
 
-  DI.server = app.listen(port, () => {
-    console.log(
-      `MikroORM express TS example started at http://localhost:${port}`
-    );
+  DI.server = http.createServer(app);
+  DI.io = new SocketIOServer(DI.server, {
+    cors: {
+      origin: '*', //! Just for demonstration reasons, this would not go into production
+      methods: ['GET', 'POST'],
+    },
+  });
+
+  DI.io.on('connection', (socket) => {
+    console.log(`New client connected: ${socket.id}`);
+    socket.on('disconnect', () => {
+      console.log(`Client disconnected: ${socket.id}`);
+    });
+  });
+
+  DI.server.listen(port, () => {
+    console.log(`Server listening on http://localhost:${port}`);
     startScheduledTasks();
   });
 })();

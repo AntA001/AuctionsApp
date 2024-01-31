@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Form, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -40,6 +40,18 @@ export function CreateBidModal({
   show: boolean;
   onHide: () => void;
 }) {
+  const [remainingTime, setRemainingTime] = useState(
+    timeLeft(auction.terminateAt),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const updatedTimeLeft = timeLeft(auction.terminateAt);
+      setRemainingTime(updatedTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup on component unmount
+  }, [auction.terminateAt]);
   const { user } = useAuth();
   return (
     <Modal
@@ -62,7 +74,7 @@ export function CreateBidModal({
             <Row className="justify-content-center align-items-center">
               <Col sm={{ span: 5, offset: 1 }}>
                 <p>Seller: {auction.seller.name}</p>
-                <p>Deadline: {timeLeft(auction.terminateAt)}</p>
+                <p>Deadline: {remainingTime}</p>
               </Col>
               <Col sm={{ span: 5, offset: 1 }}>
                 <p>
@@ -100,7 +112,7 @@ export function CreateBidModal({
                   controlId="formBasicEmail"
                 >
                   <Form.Label sm={4} column>
-                    Deadline
+                    Is Max
                   </Form.Label>
                   <Col sm={8} className="align-self-center">
                     <Form.Check

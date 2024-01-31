@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useActionData } from 'react-router-dom';
+import io from 'socket.io-client';
 
 import { Bid } from '../bid/bid';
 import { CreateBidModal } from '../bid/CreateBidModal';
@@ -24,6 +25,8 @@ export const loader = async () => {
 type CreateBidData = {
   bid: Bid;
 };
+
+const socket = io(`${process.env.REACT_APP_API_URL}`);
 
 export default function AuctionDashboard() {
   const createData = useActionData() as CreateBidData;
@@ -54,7 +57,7 @@ export default function AuctionDashboard() {
       if (data.length === 0) {
         const { auctions, totalCount } = await fetchAuctions(0);
         setData(auctions);
-        setTotalCount(totalCount); // Set total count from the initial fetch
+        setTotalCount(totalCount); // Set correct total count from the initial fetch
         setPage(1);
         setHasMore(auctions.length === 20);
       }
@@ -62,7 +65,15 @@ export default function AuctionDashboard() {
 
     initFetch();
 
+    socket.on('auctionsUpdated', async () => {
+      const { auctions, totalCount } = await fetchAuctions(page);
+      setData(auctions);
+      setTotalCount(totalCount);
+      setHasMore(auctions.length === 20);
+    });
+
     return () => {
+      socket.off('auctionsUpdated');
       setData([]);
       setTotalCount(0);
       setPage(0);
@@ -79,41 +90,45 @@ export default function AuctionDashboard() {
 
   return (
     <Container className="auctionDash-container">
-      {data.length && (
+      {data.length ? (
         //Changed auction count to be more dynamic
-        <div className="auction-count">
-          Showing <strong>{data.length}</strong> of{' '}
-          <strong>{totalCount}</strong> Auctions
-        </div>
-      )}
-      <InfiniteScroll
-        dataLength={data.length}
-        next={next}
-        height={`70vh`}
-        hasMore={hasMore}
-        loader={
-          <div className="d-flex justify-content-center">
-            <Spinner animation="grow" />
+        <div>
+          <div className="auction-count">
+            Showing <strong>{data.length}</strong> of{' '}
+            <strong>{totalCount}</strong> Auctions
           </div>
-        }
-        endMessage={
-          <p className="end-message">
-            <b>You have seen it all</b>
-          </p>
-        }
-      >
-        {data.map((auction) => (
-          <div
-            key={auction.id}
-            onClick={() => {
-              setSelected(auction);
-              setModalShow(true);
-            }}
+          <InfiniteScroll
+            dataLength={data.length}
+            next={next}
+            height={`70vh`}
+            hasMore={hasMore}
+            loader={
+              <div className="d-flex justify-content-center">
+                <Spinner animation="grow" />
+              </div>
+            }
+            endMessage={
+              <p className="end-message">
+                <b>You have seen it all</b>
+              </p>
+            }
           >
-            <AuctionTile auction={auction} />
-          </div>
-        ))}
-      </InfiniteScroll>
+            {data.map((auction) => (
+              <div
+                key={auction.id}
+                onClick={() => {
+                  setSelected(auction);
+                  setModalShow(true);
+                }}
+              >
+                <AuctionTile auction={auction} />
+              </div>
+            ))}
+          </InfiniteScroll>
+        </div>
+      ) : (
+        'NO RESULTS FOUND'
+      )}
       {modalShow && (
         <CreateBidModal
           auction={selected as Auction}

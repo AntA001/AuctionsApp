@@ -26,9 +26,21 @@ router.get('/buyer/:id', async (req: Request, res: Response) => {
 });
 
 router.get('/seller/:id', async (req: Request, res: Response) => {
-  const auctions = await DI.auctionRepository.find({
-    seller: req.params.id,
-  });
+  const auctions = await DI.auctionRepository.find(
+    {
+      $and: [
+        { seller: req.params.id },
+        //? It was not specified in the requirements if the sellers page should show the finished ones or not. ->
+        //? So I leave the FINISHED check commented out. ->
+        //? Adding this would also require (ideally) adding a client socket listener in the frontend of the seller page too ->
+        //? for real time updates (which, only for the seller page, are now handled just by the countdown frontend implementation) ->
+        // { status: { $ne: AuctionStatus.FINISHED } },
+      ],
+    },
+    {
+      orderBy: { terminateAt: QueryOrder.DESC },
+    }
+  );
   res.json(auctions);
 });
 
@@ -36,6 +48,7 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const auction = DI.auctionRepository.create(req.body);
     await DI.orm.em.persistAndFlush(auction);
+    DI.io.emit('auctionsUpdated');
 
     res.json(auction);
   } catch (e: any) {

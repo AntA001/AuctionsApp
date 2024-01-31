@@ -1,13 +1,25 @@
-import React, { useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, ListGroupItem, Row } from 'react-bootstrap';
 
-import './Tile.scss';
 import { timeLeft } from '../util/format-helper';
 
 import { Auction } from './Auction';
 
+import './Tile.scss';
+
 export function AuctionTile({ auction }: { auction: Auction }) {
-  const expiresIn = useCallback((date: string) => timeLeft(date), []);
+  const [remainingTime, setRemainingTime] = useState(
+    timeLeft(auction.terminateAt),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const updatedTimeLeft = timeLeft(auction.terminateAt);
+      setRemainingTime(updatedTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(timer); // Cleanup on component unmount
+  }, [auction.terminateAt]);
 
   return (
     <ListGroupItem className="list-group-item">
@@ -18,7 +30,7 @@ export function AuctionTile({ auction }: { auction: Auction }) {
             <p className="truncate item">{auction.description}</p>
           </Col>
           <Col className="d-flex justify-content-end">
-            <p className="item">{expiresIn(auction.terminateAt)}</p>
+            <p className="item">{remainingTime}</p>
           </Col>
           <Col className="d-flex justify-content-end">
             <p className="item fw-bold">{auction.startPrice + '€'}</p>
