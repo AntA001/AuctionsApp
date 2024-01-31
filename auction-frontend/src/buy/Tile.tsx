@@ -22,7 +22,9 @@ export function AuctionTile({ auction }: { auction: Auction }) {
   }, [auction.terminateAt]);
 
   return (
-    <ListGroupItem className="list-group-item">
+    <ListGroupItem
+      className={`list-group-item ${remainingTime === 'FINISHED' ? 'finished' : ''}`}
+    >
       <Container>
         <Row className="align-items-center" style={{ height: '125px' }}>
           <Col sm={6}>
@@ -30,7 +32,11 @@ export function AuctionTile({ auction }: { auction: Auction }) {
             <p className="truncate item">{auction.description}</p>
           </Col>
           <Col className="d-flex justify-content-end">
-            <p className="item">{remainingTime}</p>
+            <p
+              className={`item ${remainingTime === 'FINISHED' ? 'finished-timer' : ''}`}
+            >
+              {remainingTime}
+            </p>
           </Col>
           <Col className="d-flex justify-content-end">
             <p className="item fw-bold">{auction.startPrice + '€'}</p>

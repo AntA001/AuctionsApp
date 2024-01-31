@@ -7,6 +7,18 @@
   -webkit-box-orient: vertical;
 }
 
+//? This and the next one are based on the logic that we keep FINISHED ones in sellers page
+//? If we decide filter them out here too, then they are not needed
+.finished {
+  border: 2px solid rgba(113, 0, 0, 0.493) !important;
+  opacity: 0.5;
+}
+
+.finished-timer {
+  font-weight: bold;
+  color: rgba(113, 0, 0, 0.493);
+}
+
 .item {
   margin-bottom: 0;
 }
