@@ -35,24 +35,44 @@ export function CreateBidModal({
   auction,
   show,
   onHide,
+  socket,
 }: {
   auction: Auction;
   show: boolean;
   onHide: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  socket: any;
 }) {
+  interface BidUpdateData {
+    auctionId: string;
+    newPrice: number;
+  }
+  const { user } = useAuth();
+
   const [remainingTime, setRemainingTime] = useState(
     timeLeft(auction.terminateAt),
   );
+  const [currentPrice, setCurrentPrice] = useState(auction.startPrice); // Add state to track current price
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const updatedTimeLeft = timeLeft(auction.terminateAt);
-      setRemainingTime(updatedTimeLeft);
+      setRemainingTime(timeLeft(auction.terminateAt));
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup on component unmount
-  }, [auction.terminateAt]);
-  const { user } = useAuth();
+    const handleBidUpdate = (data: BidUpdateData) => {
+      if (data.auctionId === auction.id) {
+        setCurrentPrice(data.newPrice);
+      }
+    };
+
+    socket.on('bidPlaced', handleBidUpdate);
+
+    return () => {
+      clearInterval(timer);
+      socket.off('bidPlaced', handleBidUpdate);
+    };
+  }, [auction, socket]);
+
   return (
     <Modal
       show={show}
@@ -80,7 +100,7 @@ export function CreateBidModal({
                 <p>
                   Price:{' '}
                   <span style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-                    {auction.startPrice}
+                    {currentPrice}
                   </span>
                 </p>
               </Col>

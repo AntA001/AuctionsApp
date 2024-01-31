@@ -134,6 +134,7 @@ export default function AuctionDashboard() {
           auction={selected as Auction}
           show={modalShow}
           onHide={() => setModalShow(false)}
+          socket={socket}
         />
       )}
       <div className="toast-message">
