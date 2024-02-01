@@ -1,64 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { Col, Container, Form, Row } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { Form as RouterForm } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Col, Container, Form, Row, Button, Modal } from 'react-bootstrap';
 
 import { useAuth } from '../auth/AuthProvider';
 import { Auction } from '../buy/Auction';
-import 'react-datetime-picker/dist/DateTimePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import 'react-clock/dist/Clock.css';
 import { timeLeft } from '../util/format-helper';
 import { useSocket } from '../util/SocketContext';
-
-export async function action({ request }: { request: Request }) {
-  const formData = await request.formData();
-  const { price, isMaximum, bidder, auction } = Object.fromEntries(formData);
-
-  const body = JSON.stringify({
-    price,
-    isMaximum,
-    bidder,
-    auction,
-  });
-
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/bids`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: body,
-  });
-  const bid = await res.json();
-  return { bid };
-}
 
 export function CreateBidModal({
   auction,
   show,
   onHide,
+  onNotify,
 }: {
   auction: Auction;
   show: boolean;
   onHide: () => void;
+  onNotify: (message: string, type: 'success' | 'error') => void;
 }) {
-  interface BidUpdateData {
-    auctionId: string;
-    newPrice: number;
-  }
   const { user } = useAuth();
   const socket = useSocket();
-
   const [remainingTime, setRemainingTime] = useState(
     timeLeft(auction.terminateAt),
   );
-  const [currentPrice, setCurrentPrice] = useState(auction.startPrice); // Add state to track current price
+  const [currentPrice, setCurrentPrice] = useState(auction.startPrice);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setRemainingTime(timeLeft(auction.terminateAt));
     }, 1000);
 
-    const handleBidUpdate = (data: BidUpdateData) => {
+    const handleBidUpdate = (data: { auctionId: string; newPrice: number }) => {
       if (data.auctionId === auction.id) {
         setCurrentPrice(data.newPrice);
       }
@@ -72,6 +43,41 @@ export function CreateBidModal({
     };
   }, [auction, socket]);
 
+  //Replaced router form submission logic with traditional onSubmit
+  //In order to handle notification events
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const body = JSON.stringify({
+      price: formData.get('price'),
+      isMaximum: formData.get('isMaximum') === 'on',
+      bidder: user?.id,
+      auction: auction.id,
+    });
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/bids`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to place bid');
+      }
+
+      // Bid was successful, close the modal
+      onNotify('Bid placed successfully!', 'success');
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unknown error occurred';
+      onNotify(errorMessage, 'error'); // Notify error
+    }
+  };
+
   return (
     <Modal
       show={show}
@@ -79,15 +85,15 @@ export function CreateBidModal({
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <RouterForm method="post" onSubmit={onHide}>
-        <Modal.Header className="justify-content-center">
+      <Form onSubmit={handleSubmit}>
+        <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Bid on auction
+            Bid on Auction
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {' '}
           <h3>{auction.title}</h3>
-
           <p>{auction.description}</p>
           <Container>
             <Row className="justify-content-center align-items-center">
@@ -147,15 +153,15 @@ export function CreateBidModal({
             <Form.Control name="auction" defaultValue={auction.id} hidden />
           </Container>
         </Modal.Body>
-        <Modal.Footer className="justify-content-between px-5">
-          <Button variant="primary" type="submit">
-            Bid
-          </Button>
-          <Button variant="secondary" type="button" onClick={onHide}>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={onHide}>
             Cancel
           </Button>
+          <Button variant="primary" type="submit">
+            Place Bid
+          </Button>
         </Modal.Footer>
-      </RouterForm>
+      </Form>
     </Modal>
   );
 }

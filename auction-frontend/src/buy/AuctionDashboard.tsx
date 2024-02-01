@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useActionData } from 'react-router-dom';
 
-import { Bid } from '../bid/bid';
 import { CreateBidModal } from '../bid/CreateBidModal';
 import { useSocket } from '../util/SocketContext';
 import ToastMessage from '../util/Toast';
@@ -22,19 +20,18 @@ export const loader = async () => {
   return { auctions };
 };
 
-type CreateBidData = {
-  bid: Bid;
-};
-
 export default function AuctionDashboard() {
   const socket = useSocket();
-  const createData = useActionData() as CreateBidData;
   const [data, setData] = useState<Auction[]>([]);
   const [totalCount, setTotalCount] = useState(0); // Added totalCount
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [modalShow, setModalShow] = useState(false);
   const [selected, setSelected] = useState<Auction | null>(null);
+  const [notification, setNotification] = useState({
+    message: '',
+    type: '', // 'success' or 'error'
+  });
 
   const fetchAuctions = async (page: number) => {
     try {
@@ -79,6 +76,11 @@ export default function AuctionDashboard() {
       setHasMore(true);
     };
   }, []);
+
+  const handleNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    if (type === 'success') setModalShow(false);
+  };
 
   const next = async () => {
     const { auctions: nextPageData } = await fetchAuctions(page);
@@ -133,15 +135,18 @@ export default function AuctionDashboard() {
           auction={selected as Auction}
           show={modalShow}
           onHide={() => setModalShow(false)}
+          onNotify={handleNotification}
         />
       )}
-      <div className="toast-message">
+
+      {notification.message && (
         <ToastMessage
-          show={!!createData}
-          message={`You successfully created on ${selected?.title}`}
-          bg="success"
+          show={true}
+          message={notification.message}
+          bg={notification.type === 'error' ? 'danger' : 'success'}
+          onClose={() => setNotification({ message: '', type: '' })} // Clear the notification
         />
-      </div>
+      )}
     </Container>
   );
 }

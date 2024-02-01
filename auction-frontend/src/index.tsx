@@ -13,7 +13,6 @@ import Home from './auth/Home';
 import Login, { action as loginAction } from './auth/Login';
 import PrivateLayout from './auth/PrivateLayout';
 import PublicLayout from './auth/PublicLayout';
-import { action as createBidAction } from './bid/CreateBidModal';
 import AuctionDashboard, {
   loader as dashboardLoader,
 } from './buy/AuctionDashboard';
@@ -37,7 +36,6 @@ const router = createBrowserRouter(
             path="auctions"
             element={<AuctionDashboard />}
             loader={dashboardLoader}
-            action={createBidAction}
           />
         </Route>
         <Route path="seller" element={<Seller />}>

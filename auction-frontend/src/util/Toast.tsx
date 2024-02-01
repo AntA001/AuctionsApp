@@ -7,24 +7,26 @@ export default function ToastMessage({
   show,
   message,
   bg,
+  onClose,
 }: {
   show: boolean;
   message: string;
   bg: string;
+  onClose?: () => void;
 }) {
   const [showToast, setShowToast] = useState(show);
 
   useEffect(() => {
     setShowToast(show);
   }, [show]);
+
+  const handleClose = () => {
+    setShowToast(false);
+    if (onClose) onClose(); // Calls onClose if it's provided
+  };
+
   return (
-    <Toast
-      bg={bg}
-      onClose={() => setShowToast(false)}
-      show={showToast}
-      delay={4000}
-      autohide
-    >
+    <Toast bg={bg} onClose={handleClose} show={showToast} delay={4000} autohide>
       <ToastHeader>
         <strong className="me-auto">Notification</strong>
       </ToastHeader>
