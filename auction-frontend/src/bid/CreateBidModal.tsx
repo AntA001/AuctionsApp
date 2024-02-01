@@ -84,6 +84,7 @@ export function CreateBidModal({
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
+      onHide={onHide}
     >
       <Form onSubmit={handleSubmit}>
         <Modal.Header closeButton>

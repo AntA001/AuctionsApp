@@ -59,6 +59,18 @@ export default function AuctionDashboard() {
       }
     };
 
+    //Updates local data regarding price when bids are placed
+    //This helps provide up to date data to CreateBidModal
+    const handleBidUpdate = (data: { auctionId: string; newPrice: number }) => {
+      setData((prevData) =>
+        prevData.map((auction) =>
+          auction.id === data.auctionId
+            ? { ...auction, startPrice: data.newPrice }
+            : auction,
+        ),
+      );
+    };
+
     initFetch();
 
     socket?.on('auctionsUpdated', async () => {
@@ -68,14 +80,17 @@ export default function AuctionDashboard() {
       setHasMore(auctions.length === 20);
     });
 
+    socket?.on('bidPlaced', handleBidUpdate);
+
     return () => {
       socket?.off('auctionsUpdated');
+      socket?.off('bidPlaced', handleBidUpdate);
       setData([]);
       setTotalCount(0);
       setPage(0);
       setHasMore(true);
     };
-  }, []);
+  }, [socket]);
 
   const handleNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
