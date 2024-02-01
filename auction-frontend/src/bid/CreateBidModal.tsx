@@ -10,6 +10,7 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import { timeLeft } from '../util/format-helper';
+import { useSocket } from '../util/SocketContext';
 
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
@@ -35,19 +36,17 @@ export function CreateBidModal({
   auction,
   show,
   onHide,
-  socket,
 }: {
   auction: Auction;
   show: boolean;
   onHide: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  socket: any;
 }) {
   interface BidUpdateData {
     auctionId: string;
     newPrice: number;
   }
   const { user } = useAuth();
+  const socket = useSocket();
 
   const [remainingTime, setRemainingTime] = useState(
     timeLeft(auction.terminateAt),
@@ -65,11 +64,11 @@ export function CreateBidModal({
       }
     };
 
-    socket.on('bidPlaced', handleBidUpdate);
+    socket?.on('bidPlaced', handleBidUpdate);
 
     return () => {
       clearInterval(timer);
-      socket.off('bidPlaced', handleBidUpdate);
+      socket?.off('bidPlaced', handleBidUpdate);
     };
   }, [auction, socket]);
 

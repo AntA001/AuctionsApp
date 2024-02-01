@@ -10,6 +10,7 @@ import {
 
 import { AuthProvider, useAuth } from './auth/AuthProvider';
 import { User } from './auth/User';
+import { SocketProvider } from './util/SocketContext';
 
 import './App.scss';
 
@@ -49,21 +50,23 @@ export default function App() {
   }, [user, login, navigate]);
 
   return (
-    <Suspense fallback={<Spinner animation="grow" />}>
-      <Await
-        resolve={user}
-        errorElement={
-          <Alert variant="danger" dismissible={true}>
-            Something went wrong!
-          </Alert>
-        }
-      >
-        {(user) => (
-          <AuthProvider payload={user}>
-            <Outlet />
-          </AuthProvider>
-        )}
-      </Await>
-    </Suspense>
+    <SocketProvider>
+      <Suspense fallback={<Spinner animation="grow" />}>
+        <Await
+          resolve={user}
+          errorElement={
+            <Alert variant="danger" dismissible={true}>
+              Something went wrong!
+            </Alert>
+          }
+        >
+          {(user) => (
+            <AuthProvider payload={user}>
+              <Outlet />
+            </AuthProvider>
+          )}
+        </Await>
+      </Suspense>
+    </SocketProvider>
   );
 }

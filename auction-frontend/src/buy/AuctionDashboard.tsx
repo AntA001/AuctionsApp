@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useActionData } from 'react-router-dom';
-import io from 'socket.io-client';
 
 import { Bid } from '../bid/bid';
 import { CreateBidModal } from '../bid/CreateBidModal';
+import { useSocket } from '../util/SocketContext';
 import ToastMessage from '../util/Toast';
 
 import { Auction } from './Auction';
@@ -26,9 +26,8 @@ type CreateBidData = {
   bid: Bid;
 };
 
-const socket = io(`${process.env.REACT_APP_API_URL}`);
-
 export default function AuctionDashboard() {
+  const socket = useSocket();
   const createData = useActionData() as CreateBidData;
   const [data, setData] = useState<Auction[]>([]);
   const [totalCount, setTotalCount] = useState(0); // Added totalCount
@@ -65,7 +64,7 @@ export default function AuctionDashboard() {
 
     initFetch();
 
-    socket.on('auctionsUpdated', async () => {
+    socket?.on('auctionsUpdated', async () => {
       const { auctions, totalCount } = await fetchAuctions(page);
       setData(auctions);
       setTotalCount(totalCount);
@@ -73,7 +72,7 @@ export default function AuctionDashboard() {
     });
 
     return () => {
-      socket.off('auctionsUpdated');
+      socket?.off('auctionsUpdated');
       setData([]);
       setTotalCount(0);
       setPage(0);
@@ -134,7 +133,6 @@ export default function AuctionDashboard() {
           auction={selected as Auction}
           show={modalShow}
           onHide={() => setModalShow(false)}
-          socket={socket}
         />
       )}
       <div className="toast-message">

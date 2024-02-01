@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Col, Container, ListGroupItem, Row } from 'react-bootstrap';
 
 import { timeLeft } from '../util/format-helper';
+import { useSocket } from '../util/SocketContext';
 
 import { Auction } from './Auction';
 
 import './Tile.scss';
 
 export function AuctionTile({ auction }: { auction: Auction }) {
+  const socket = useSocket();
   const [remainingTime, setRemainingTime] = useState(
     timeLeft(auction.terminateAt),
   );
+  const [currentPrice, setCurrentPrice] = useState(auction.startPrice);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -18,8 +21,25 @@ export function AuctionTile({ auction }: { auction: Auction }) {
       setRemainingTime(updatedTimeLeft);
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup on component unmount
-  }, [auction.terminateAt]);
+    // Event listener for auction price updates
+    const handlePriceUpdate = (data: {
+      auctionId: string;
+      newPrice: number;
+    }) => {
+      if (data.auctionId === auction.id) {
+        setCurrentPrice(data.newPrice);
+      }
+    };
+
+    // Registers the event listener with the socket
+    socket?.on('bidPlaced', handlePriceUpdate);
+
+    // Cleanup function
+    return () => {
+      clearInterval(timer);
+      socket?.off('bidPlaced', handlePriceUpdate);
+    };
+  }, [auction, socket]);
 
   return (
     <ListGroupItem
@@ -39,7 +59,7 @@ export function AuctionTile({ auction }: { auction: Auction }) {
             </p>
           </Col>
           <Col className="d-flex justify-content-end">
-            <p className="item fw-bold">{auction.startPrice + '€'}</p>
+            <p className="item fw-bold">{currentPrice + '€'}</p>
           </Col>
         </Row>
       </Container>
