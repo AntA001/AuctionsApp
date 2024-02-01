@@ -7,59 +7,97 @@ export const BidController = router;
 
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { price, isMaximum, bidder } = req.body;
+    const { price, isMaximum, bidder: bidderId, auction: auctionId } = req.body;
     const bidPrice = parseFloat(price);
 
     if (isNaN(bidPrice)) {
       return res.status(400).json({ message: 'Invalid bid price format.' });
     }
 
-    const auction = await DI.auctionRepository.findOne({
-      id: req.body.auction,
-    });
-    if (!auction) {
-      return res.status(404).json({ message: 'Auction not found.' });
+    const bidder = await DI.userRepository.findOne({ id: bidderId });
+    const auction = await DI.auctionRepository.findOne({ id: auctionId });
+
+    if (!bidder || !auction) {
+      return res.status(404).json({ message: 'Bidder or Auction not found.' });
     }
 
-    // Determine the current highest bid or start price
-    const currentMaxBid = Math.max(
-      auction.startPrice,
-      ...(await DI.bidRepository.find({ auction })).map((bid) => bid.price)
+    const highestBid = await DI.bidRepository.findOne(
+      { auction },
+      { orderBy: { price: 'DESC' } }
     );
 
-    if (!isMaximum) {
-      // For regular bids, ensure the bid is at least 1€ higher than the current highest bid/start price
-      if (bidPrice <= currentMaxBid) {
+    // Checks if the new bid is a maximum bid or a regular bid
+    if (isMaximum) {
+      const effectiveBidPrice = highestBid
+        ? Math.min(bidPrice, highestBid.price + 1)
+        : bidPrice;
+      const maxBid = DI.bidRepository.create({
+        bidder,
+        auction,
+        price: effectiveBidPrice,
+        isMaximum: true,
+        ...(isMaximum && { maxLimit: bidPrice }),
+      });
+      await DI.orm.em.persistAndFlush(maxBid);
+
+      // Updates auction's start price if necessary
+      if (effectiveBidPrice > auction.startPrice) {
+        auction.startPrice = effectiveBidPrice;
+        await DI.orm.em.persistAndFlush(auction);
+      }
+    } else {
+      if (highestBid && bidPrice <= highestBid.price) {
         return res.status(400).json({
-          message:
-            'Your bid must be at least 1€ higher than the current highest bid/start price.',
+          message: 'Your bid must be higher than the current highest bid.',
         });
+      }
+
+      const bid = DI.bidRepository.create({
+        bidder,
+        auction,
+        price: bidPrice,
+        isMaximum: false,
+        ...(isMaximum && { maxLimit: bidPrice }),
+      });
+      await DI.orm.em.persistAndFlush(bid);
+
+      // Updates auction's start price if necessary
+      if (!highestBid || bidPrice > auction.startPrice) {
+        auction.startPrice = bidPrice;
+        await DI.orm.em.persistAndFlush(auction);
       }
     }
 
-    // Prepare bid data, including maxLimit for maximum bids
-    const bidData = {
-      bidder: bidder,
-      auction: req.body.auction,
-      price: isMaximum ? Math.min(bidPrice, currentMaxBid + 1) : bidPrice, // For maximum bids, set price to be slightly higher than currentMaxBid, capped at bidPrice
-      isMaximum,
-      ...(isMaximum && { maxLimit: bidPrice }),
-    };
+    // Handles automatic bidding for users with maximum bids
+    const maxBids = await DI.bidRepository.find({ auction, isMaximum: true });
+    for (const maxBid of maxBids) {
+      if (maxBid.maxLimit && maxBid.maxLimit > auction.startPrice) {
+        const autoBidPrice = auction.startPrice + 1;
+        if (autoBidPrice <= maxBid.maxLimit) {
+          const autoBid = DI.bidRepository.create({
+            bidder: maxBid.bidder,
+            auction,
+            price: autoBidPrice,
+            isMaximum: false,
+            ...(isMaximum && { maxLimit: bidPrice }),
+          });
+          await DI.orm.em.persistAndFlush(autoBid);
 
-    const bid = DI.bidRepository.create(bidData);
-    await DI.orm.em.persistAndFlush(bid);
-
-    // Update auction's current price only if the new bid exceeds the current highest bid
-    if (bidData.price > currentMaxBid) {
-      auction.startPrice = bidData.price;
-      await DI.orm.em.persistAndFlush(auction);
+          // Updates auction's start price
+          auction.startPrice = autoBidPrice;
+          await DI.orm.em.persistAndFlush(auction);
+        }
+      }
     }
 
-    DI.io.emit('bidPlaced', { auctionId: auction.id, newPrice: bidData.price });
+    DI.io.emit('bidPlaced', {
+      auctionId: auction.id,
+      newPrice: auction.startPrice,
+    });
 
-    res.json({ success: true, message: 'Bid placed successfully', bid });
+    res.json({ success: true, message: 'Bid placed successfully' });
   } catch (e) {
-    const error = e as Error; // Asserting `e` as an Error object
+    const error = e as Error;
     console.error('Failed to process bid:', error.message, error.stack);
     return res.status(500).json({
       message: 'An error occurred while processing your bid.',

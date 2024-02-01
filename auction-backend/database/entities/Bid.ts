@@ -17,7 +17,7 @@ export class BidEntity extends BaseEntity {
     this.auction = init.auction;
     this.price = init.price;
     this.isMaximum = init.isMaximum;
-    this.maxLimit = init.maxLimit; // Setting the maxLimit from the init object
+    this.maxLimit = init.maxLimit;
   }
 
   @ManyToOne({
