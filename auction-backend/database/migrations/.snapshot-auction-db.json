@@ -23,7 +23,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -33,7 +33,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "name": {
@@ -90,7 +90,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -100,7 +100,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "seller_id": {
@@ -169,7 +169,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "status": {
@@ -237,7 +237,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -247,7 +247,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
+          "length": 0,
           "mappedType": "datetime"
         },
         "bidder_id": {
@@ -286,6 +286,15 @@
           "nullable": false,
           "default": "false",
           "mappedType": "boolean"
+        },
+        "max_limit": {
+          "name": "max_limit",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
         }
       },
       "name": "bids",

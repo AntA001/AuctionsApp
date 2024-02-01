@@ -1,8 +1,8 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core'
-import { BaseEntity } from './BaseEntity'
-import { EntityInitData } from '../types/types'
-import { UserEntity } from './User'
-import { AuctionEntity } from './Auction'
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntity } from './BaseEntity';
+import { EntityInitData } from '../types/types';
+import { UserEntity } from './User';
+import { AuctionEntity } from './Auction';
 
 @Entity({ tableName: 'bids' })
 export class BidEntity extends BaseEntity {
@@ -10,13 +10,14 @@ export class BidEntity extends BaseEntity {
     init: EntityInitData<
       BidEntity,
       'bidder' | 'auction' | 'price' | 'isMaximum'
-    >,
+    > & { maxLimit?: number }
   ) {
-    super(init)
-    this.bidder = init.bidder
-    this.auction = init.auction
-    this.price = init.price
-    this.isMaximum = init.isMaximum
+    super(init);
+    this.bidder = init.bidder;
+    this.auction = init.auction;
+    this.price = init.price;
+    this.isMaximum = init.isMaximum;
+    this.maxLimit = init.maxLimit; // Setting the maxLimit from the init object
   }
 
   @ManyToOne({
@@ -27,7 +28,7 @@ export class BidEntity extends BaseEntity {
     onUpdateIntegrity: 'cascade',
     columnType: 'uuid',
   })
-  bidder: UserEntity
+  bidder: UserEntity;
 
   @ManyToOne({
     entity: () => AuctionEntity,
@@ -37,11 +38,14 @@ export class BidEntity extends BaseEntity {
     onUpdateIntegrity: 'cascade',
     columnType: 'uuid',
   })
-  auction: AuctionEntity
+  auction: AuctionEntity;
 
   @Property({ columnType: 'integer' })
-  price: number
+  price: number;
 
   @Property({ columnType: 'boolean', default: false })
-  isMaximum: boolean
+  isMaximum: boolean;
+
+  @Property({ columnType: 'integer', nullable: true })
+  maxLimit?: number;
 }

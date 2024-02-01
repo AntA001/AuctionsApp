@@ -3,6 +3,8 @@ import Toast from 'react-bootstrap/Toast';
 import ToastBody from 'react-bootstrap/ToastBody';
 import ToastHeader from 'react-bootstrap/ToastHeader';
 
+import './Toast.scss';
+
 export default function ToastMessage({
   show,
   message,
@@ -26,7 +28,14 @@ export default function ToastMessage({
   };
 
   return (
-    <Toast bg={bg} onClose={handleClose} show={showToast} delay={4000} autohide>
+    <Toast
+      className="toast-message"
+      bg={bg}
+      onClose={handleClose}
+      show={showToast}
+      delay={4000}
+      autohide
+    >
       <ToastHeader>
         <strong className="me-auto">Notification</strong>
       </ToastHeader>
