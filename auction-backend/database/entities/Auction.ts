@@ -1,7 +1,15 @@
-import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core'
-import { BaseEntity } from './BaseEntity'
-import { UserEntity } from './User'
-import { AuctionStatus, EntityInitData, ItemCategory } from '../types/types'
+import {
+  Collection,
+  Entity,
+  Enum,
+  ManyToOne,
+  OneToMany,
+  Property,
+} from '@mikro-orm/core';
+import { BaseEntity } from './BaseEntity';
+import { UserEntity } from './User';
+import { AuctionStatus, EntityInitData, ItemCategory } from '../types/types';
+import { BidEntity } from './Bid';
 
 @Entity({ tableName: 'auctions' })
 export class AuctionEntity extends BaseEntity {
@@ -15,16 +23,16 @@ export class AuctionEntity extends BaseEntity {
       | 'startPrice'
       | 'terminateAt'
       | 'status'
-    >,
+    >
   ) {
-    super(init)
-    this.seller = init.seller
-    this.title = init.title
-    this.description = init.description
-    this.category = init.category
-    this.startPrice = init.startPrice
-    this.terminateAt = init.terminateAt
-    this.status = init.status
+    super(init);
+    this.seller = init.seller;
+    this.title = init.title;
+    this.description = init.description;
+    this.category = init.category;
+    this.startPrice = init.startPrice;
+    this.terminateAt = init.terminateAt;
+    this.status = init.status;
   }
 
   @ManyToOne({
@@ -35,23 +43,26 @@ export class AuctionEntity extends BaseEntity {
     onUpdateIntegrity: 'cascade',
     columnType: 'uuid',
   })
-  seller: UserEntity
+  seller: UserEntity;
 
   @Property({ columnType: 'varchar(225)' })
-  title: string
+  title: string;
 
   @Property({ columnType: 'text' })
-  description: string
+  description: string;
 
   @Enum({ items: () => ItemCategory })
-  category: ItemCategory
+  category: ItemCategory;
 
   @Property({ columnType: 'integer' })
-  startPrice: number
+  startPrice: number;
 
   @Property()
-  terminateAt: Date
+  terminateAt: Date;
 
   @Enum({ items: () => AuctionStatus, default: AuctionStatus.ON_GOING })
-  status: AuctionStatus
+  status: AuctionStatus;
+
+  @OneToMany(() => BidEntity, (bid) => bid.auction)
+  bids = new Collection<BidEntity>(this);
 }

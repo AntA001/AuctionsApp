@@ -26,11 +26,24 @@ router.post('/', async (req: Request, res: Response) => {
       { orderBy: { price: 'DESC' } }
     );
 
+    const highestMaxBid = await DI.bidRepository.findOne(
+      { auction, isMaximum: true },
+      { orderBy: { maxLimit: 'DESC' } }
+    );
+
+    let effectiveBidPrice = bidPrice;
+
     // Checks if the new bid is a maximum bid or a regular bid
     if (isMaximum) {
-      const effectiveBidPrice = highestBid
-        ? Math.min(bidPrice, highestBid.price + 1)
-        : bidPrice;
+      // CheckS if the new max bid is higher than the highest max bid
+      if (highestMaxBid && bidPrice > (highestMaxBid.maxLimit ?? 0)) {
+        effectiveBidPrice = (highestMaxBid.maxLimit ?? 0) + 1;
+      } else {
+        effectiveBidPrice = highestBid
+          ? highestBid.price + 1
+          : auction.startPrice + 1;
+      }
+
       const maxBid = DI.bidRepository.create({
         bidder,
         auction,
@@ -39,8 +52,8 @@ router.post('/', async (req: Request, res: Response) => {
         ...(isMaximum && { maxLimit: bidPrice }),
       });
       await DI.orm.em.persistAndFlush(maxBid);
+      // newMaxBidId = maxBid.id;
 
-      // Updates auction's start price if necessary
       if (effectiveBidPrice > auction.startPrice) {
         auction.startPrice = effectiveBidPrice;
         await DI.orm.em.persistAndFlush(auction);
@@ -61,7 +74,6 @@ router.post('/', async (req: Request, res: Response) => {
       });
       await DI.orm.em.persistAndFlush(bid);
 
-      // Updates auction's start price if necessary
       if (!highestBid || bidPrice > auction.startPrice) {
         auction.startPrice = bidPrice;
         await DI.orm.em.persistAndFlush(auction);
@@ -71,6 +83,7 @@ router.post('/', async (req: Request, res: Response) => {
     // Handles automatic bidding for users with maximum bids
     const maxBids = await DI.bidRepository.find({ auction, isMaximum: true });
     for (const maxBid of maxBids) {
+      if (maxBid.bidder.id === bidderId) continue;
       if (maxBid.maxLimit && maxBid.maxLimit > auction.startPrice) {
         const autoBidPrice = auction.startPrice + 1;
         if (autoBidPrice <= maxBid.maxLimit) {
@@ -94,6 +107,7 @@ router.post('/', async (req: Request, res: Response) => {
       auctionId: auction.id,
       newPrice: auction.startPrice,
     });
+    DI.io.emit('auctionsUpdated');
 
     res.json({ success: true, message: 'Bid placed successfully' });
   } catch (e) {

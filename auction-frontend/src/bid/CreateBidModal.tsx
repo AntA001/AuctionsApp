@@ -106,7 +106,7 @@ export function CreateBidModal({
                 <p>
                   Price:{' '}
                   <span style={{ fontSize: '2rem', fontWeight: 'bold' }}>
-                    {currentPrice}
+                    {`${currentPrice} €`}
                   </span>
                 </p>
               </Col>

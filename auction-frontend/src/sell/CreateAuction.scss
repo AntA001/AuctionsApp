@@ -5,8 +5,9 @@
 
 .button-container {
   z-index: 1;
-  position: absolute;
-  bottom: 30px;
+  position: fixed;
+  bottom: 80px;
+  left: 80px;
 }
 
 .create-auction-container {
